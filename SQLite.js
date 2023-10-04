@@ -1,3 +1,4 @@
+// npm i express
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const app = express();
@@ -134,8 +135,8 @@ app.delete('/hopak/people/:id', (req, res) => {
 
 db.run(`CREATE TABLE IF NOT EXISTS renting (
     id INTEGER PRIMARY KEY,
-    r_id INTEGER,
-    p_id INTEGER
+    r_name TEXT,
+    p_name TEXT
 )`);
 
 app.get('/hopak/renting', (req, res) => {
@@ -164,7 +165,7 @@ app.get('/hopak/renting/:id', (req, res) => {
 
 app.post('/hopak/renting', (req, res) => {
     const rent = req.body;
-    db.run('INSERT INTO renting (r_id, p_id) VALUES (?, ?)', rent.r_id, rent.p_id , function(err) {
+    db.run('INSERT INTO renting (r_name, p_name) VALUES (?, ?)', rent.r_name, rent.p_name , function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -176,7 +177,7 @@ app.post('/hopak/renting', (req, res) => {
 
 app.put('/hopak/renting/:id', (req, res) => {
     const rent = req.body;
-    db.run('UPDATE renting SET r_id = ?, p_id = ?  WHERE id = ?', rent.r_id, rent.p_id , req.params.id, function(err) {
+    db.run('UPDATE renting SET r_name = ?, p_name = ?  WHERE id = ?', rent.r_name, rent.p_name , req.params.id, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -199,11 +200,9 @@ app.delete('/hopak/renting/:id', (req, res) => {
 
 app.get('/hopak/summary', (req, res) => {
     db.all(`
-        SELECT rooms.id AS room_id, rooms.name AS room_name, GROUP_CONCAT(people.name) AS people
+        SELECT r_name , GROUP_CONCAT(p_name) AS p_name
         FROM renting
-        INNER JOIN rooms ON renting.r_id = rooms.id
-        INNER JOIN people ON renting.p_id = people.id
-        GROUP BY room_id
+        GROUP BY r_name
     `, (err, rows) => {
         if (err) {
             res.status(500).send(err);
