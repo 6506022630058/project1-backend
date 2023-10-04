@@ -200,9 +200,9 @@ app.delete('/hopak/renting/:id', (req, res) => {
 
 app.get('/hopak/summary', (req, res) => {
     db.all(`
-        SELECT r_name AS roomname, p_name AS personname, GROUP_CONCAT(personname) AS people
+        SELECT r_name , p_name
         FROM renting
-        GROUP BY room_id
+        GROUP BY r_name
     `, (err, rows) => {
         if (err) {
             res.status(500).send(err);
